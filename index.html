@@ -1,0 +1,1303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cipher Day — International Cybersecurity Holiday</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=VT323&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --green: #00ff41;
+  --green-dim: #00cc33;
+  --green-faint: #003311;
+  --amber: #ffb300;
+  --red: #ff2222;
+  --bg: #030a03;
+  --bg2: #060e06;
+  --bg3: #0a160a;
+  --text: #c8f0c8;
+  --text-dim: #5a8a5a;
+  --border: #0d2a0d;
+  --glow: 0 0 8px #00ff4180, 0 0 20px #00ff4130;
+  --glow-strong: 0 0 12px #00ff41cc, 0 0 40px #00ff4160, 0 0 80px #00ff4120;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 15px;
+  line-height: 1.7;
+  overflow-x: hidden;
+  cursor: crosshair;
+}
+
+/* ── SCANLINE OVERLAY ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,0,0,0.12) 2px,
+    rgba(0,0,0,0.12) 4px
+  );
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* ── NOISE GRAIN ── */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  opacity: 0.35;
+  pointer-events: none;
+  z-index: 9998;
+  mix-blend-mode: overlay;
+}
+
+/* ── CANVAS RAIN ── */
+#matrix-canvas {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  opacity: 0.04;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── NAV ── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  background: rgba(3,10,3,0.92);
+  border-bottom: 1px solid var(--green-faint);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+  height: 52px;
+}
+
+.nav-logo {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--green);
+  letter-spacing: 0.15em;
+  text-shadow: var(--glow);
+}
+
+.nav-links {
+  display: flex;
+  gap: 1.5rem;
+  list-style: none;
+}
+
+.nav-links a {
+  color: var(--text-dim);
+  text-decoration: none;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  transition: color 0.2s, text-shadow 0.2s;
+}
+
+.nav-links a:hover {
+  color: var(--green);
+  text-shadow: var(--glow);
+}
+
+.nav-tag {
+  font-size: 11px;
+  color: var(--text-dim);
+  border: 1px solid var(--green-faint);
+  padding: 2px 8px;
+  border-radius: 2px;
+}
+
+/* ── HERO ── */
+.hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 6rem 2rem 4rem;
+  text-align: center;
+  z-index: 1;
+}
+
+.hero-prefix {
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  color: var(--text-dim);
+  margin-bottom: 1.5rem;
+  animation: fadeUp 0.8s ease both;
+}
+
+.hero-prefix span {
+  color: var(--green);
+  text-shadow: var(--glow);
+}
+
+.hero-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: clamp(2.8rem, 8vw, 6.5rem);
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--green);
+  text-shadow: var(--glow-strong);
+  animation: fadeUp 0.8s 0.15s ease both;
+  position: relative;
+}
+
+.hero-title::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  color: var(--red);
+  text-shadow: none;
+  animation: glitch 4s infinite;
+  clip-path: polygon(0 30%, 100% 30%, 100% 50%, 0 50%);
+  opacity: 0;
+}
+
+@keyframes glitch {
+  0%, 94%, 100% { opacity: 0; transform: none; }
+  95% { opacity: 0.7; transform: translate(-3px, 0); }
+  96% { opacity: 0.7; transform: translate(3px, 0); }
+  97% { opacity: 0; }
+}
+
+.hero-subtitle {
+  font-family: 'VT323', monospace;
+  font-size: clamp(1.4rem, 3vw, 2rem);
+  color: var(--amber);
+  letter-spacing: 0.08em;
+  margin-top: 1rem;
+  animation: fadeUp 0.8s 0.3s ease both;
+}
+
+.hero-date {
+  margin-top: 2rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 1rem;
+  border: 1px solid var(--green);
+  padding: 0.6rem 1.6rem;
+  border-radius: 2px;
+  font-size: 13px;
+  letter-spacing: 0.2em;
+  color: var(--green);
+  box-shadow: var(--glow);
+  animation: fadeUp 0.8s 0.45s ease both;
+}
+
+.hero-date::before { content: '[ '; }
+.hero-date::after { content: ' ]'; }
+
+.blink { animation: blink 1s infinite step-end; }
+@keyframes blink { 50% { opacity: 0; } }
+
+.hero-desc {
+  max-width: 640px;
+  margin: 2.5rem auto 0;
+  color: var(--text-dim);
+  font-size: 14px;
+  line-height: 1.8;
+  animation: fadeUp 0.8s 0.6s ease both;
+}
+
+.scroll-hint {
+  position: absolute;
+  bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  color: var(--text-dim);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  animation: fadeUp 1s 1s ease both;
+}
+
+.scroll-arrow {
+  width: 1px;
+  height: 40px;
+  background: linear-gradient(to bottom, var(--green), transparent);
+  animation: scrollPulse 2s infinite;
+}
+
+@keyframes scrollPulse {
+  0%, 100% { opacity: 0.3; transform: scaleY(1); }
+  50% { opacity: 1; transform: scaleY(1.2); }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── SECTIONS CONTAINER ── */
+main {
+  position: relative;
+  z-index: 1;
+}
+
+/* ── TERMINAL BLOCK ── */
+.terminal-block {
+  max-width: 900px;
+  margin: 0 auto 5rem;
+  padding: 0 2rem;
+}
+
+.term-window {
+  background: var(--bg2);
+  border: 1px solid #0d2a0d;
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 0 0 0 1px #001500, 0 20px 60px rgba(0,255,65,0.06);
+}
+
+.term-bar {
+  background: #050f05;
+  border-bottom: 1px solid #0d2a0d;
+  padding: 8px 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.term-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+}
+.term-dot.r { background: #ff5555; box-shadow: 0 0 6px #ff555560; }
+.term-dot.y { background: #ffaa00; box-shadow: 0 0 6px #ffaa0060; }
+.term-dot.g { background: #00ff41; box-shadow: 0 0 6px #00ff4160; }
+
+.term-title {
+  flex: 1;
+  text-align: center;
+  font-size: 11px;
+  color: var(--text-dim);
+  letter-spacing: 0.1em;
+}
+
+.term-body {
+  padding: 1.5rem 2rem;
+  font-size: 13.5px;
+  line-height: 1.9;
+}
+
+.term-prompt { color: var(--green); }
+.term-cmd { color: var(--text); }
+.term-out { color: var(--text-dim); padding-left: 1.5rem; }
+.term-out.hl { color: var(--green); }
+.term-out.amber { color: var(--amber); }
+.term-out.red { color: var(--red); }
+
+/* ── SECTION HEADERS ── */
+.section {
+  max-width: 1100px;
+  margin: 0 auto 6rem;
+  padding: 0 2rem;
+}
+
+.section-label {
+  font-size: 10px;
+  letter-spacing: 0.35em;
+  color: var(--green);
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.section-label::before {
+  content: '//';
+  color: var(--text-dim);
+}
+
+.section-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, var(--green-faint), transparent);
+}
+
+.section-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: clamp(1.5rem, 3vw, 2.2rem);
+  font-weight: 700;
+  color: var(--green);
+  text-shadow: var(--glow);
+  margin-bottom: 2rem;
+  line-height: 1.2;
+}
+
+/* ── INFO GRID ── */
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  margin-top: 2rem;
+}
+
+.info-card {
+  background: var(--bg2);
+  padding: 1.8rem;
+  position: relative;
+  overflow: hidden;
+  transition: background 0.3s;
+}
+
+.info-card:hover {
+  background: var(--bg3);
+}
+
+.info-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 2px;
+  height: 0;
+  background: var(--green);
+  box-shadow: var(--glow);
+  transition: height 0.4s ease;
+}
+
+.info-card:hover::before { height: 100%; }
+
+.card-icon {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  display: block;
+}
+
+.card-label {
+  font-size: 9px;
+  letter-spacing: 0.3em;
+  color: var(--text-dim);
+  margin-bottom: 0.4rem;
+}
+
+.card-value {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--green);
+  text-shadow: var(--glow);
+}
+
+.card-body {
+  margin-top: 0.8rem;
+  font-size: 13px;
+  color: var(--text-dim);
+  line-height: 1.7;
+}
+
+/* ── WHY IT EXISTS ── */
+.manifesto {
+  border-left: 2px solid var(--green);
+  padding: 2rem 2.5rem;
+  background: var(--bg2);
+  margin-top: 2rem;
+  position: relative;
+}
+
+.manifesto::before {
+  content: '"';
+  position: absolute;
+  top: -0.5rem;
+  left: 1.5rem;
+  font-family: 'VT323';
+  font-size: 5rem;
+  color: var(--green);
+  opacity: 0.15;
+  line-height: 1;
+}
+
+.manifesto p {
+  font-family: 'Space Mono', monospace;
+  font-size: 14px;
+  color: var(--text);
+  line-height: 1.9;
+  margin-bottom: 1rem;
+}
+
+.manifesto p:last-child { margin-bottom: 0; }
+
+.manifesto strong {
+  color: var(--green);
+  text-shadow: var(--glow);
+}
+
+/* ── TRADITIONS ── */
+.traditions-list {
+  margin-top: 2rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.tradition-item {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  padding: 1.5rem;
+  position: relative;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.tradition-item:hover {
+  border-color: var(--green);
+  box-shadow: 0 0 20px rgba(0,255,65,0.06);
+}
+
+.tradition-num {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: var(--green-faint);
+  line-height: 1;
+  margin-bottom: 0.5rem;
+}
+
+.tradition-name {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.9rem;
+  color: var(--green);
+  letter-spacing: 0.1em;
+  margin-bottom: 0.5rem;
+}
+
+.tradition-desc {
+  font-size: 13px;
+  color: var(--text-dim);
+  line-height: 1.7;
+}
+
+/* ── FOOD ── */
+.food-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.food-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  padding: 1.4rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.3s;
+}
+
+.food-card:hover {
+  border-color: var(--amber);
+}
+
+.food-emoji { font-size: 2.5rem; display: block; margin-bottom: 0.8rem; }
+.food-name {
+  font-family: 'VT323', monospace;
+  font-size: 1.3rem;
+  color: var(--amber);
+  display: block;
+  margin-bottom: 0.4rem;
+}
+.food-desc { font-size: 12px; color: var(--text-dim); }
+
+/* ── ACTIVITIES ── */
+.activity-row {
+  margin-top: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background: var(--border);
+}
+
+.activity-item {
+  background: var(--bg2);
+  display: flex;
+  align-items: flex-start;
+  gap: 1.5rem;
+  padding: 1.4rem 1.8rem;
+  transition: background 0.2s;
+  cursor: default;
+}
+
+.activity-item:hover { background: var(--bg3); }
+
+.activity-badge {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  padding: 4px 8px;
+  border: 1px solid;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.badge-ctf { color: var(--green); border-color: var(--green); }
+.badge-edu { color: var(--amber); border-color: var(--amber); }
+.badge-irl { color: #ff88aa; border-color: #ff88aa; }
+
+.activity-content {}
+.activity-name {
+  font-family: 'Space Mono', monospace;
+  font-size: 14px;
+  color: var(--text);
+  margin-bottom: 0.2rem;
+}
+.activity-desc { font-size: 12px; color: var(--text-dim); }
+
+/* ── SYMBOL ── */
+.symbol-section {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 3rem;
+  align-items: center;
+  margin-top: 2rem;
+}
+
+.ascii-art {
+  font-family: 'VT323', monospace;
+  font-size: 0.85rem;
+  color: var(--green);
+  text-shadow: var(--glow);
+  line-height: 1.25;
+  white-space: pre;
+  padding: 1.5rem 2rem;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+}
+
+.symbol-text p {
+  font-size: 14px;
+  color: var(--text-dim);
+  margin-bottom: 1rem;
+  line-height: 1.8;
+}
+
+/* ── WHY PEOPLE LOVE IT ── */
+.love-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1px;
+  background: var(--border);
+  margin-top: 2rem;
+}
+
+.love-card {
+  background: var(--bg2);
+  padding: 2rem;
+  position: relative;
+}
+
+.love-card::after {
+  content: attr(data-num);
+  position: absolute;
+  bottom: 0.5rem;
+  right: 1rem;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 3.5rem;
+  font-weight: 900;
+  color: var(--green-faint);
+  line-height: 1;
+}
+
+.love-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.85rem;
+  color: var(--green);
+  letter-spacing: 0.08em;
+  margin-bottom: 0.8rem;
+}
+
+.love-body {
+  font-size: 13px;
+  color: var(--text-dim);
+  line-height: 1.7;
+}
+
+/* ── STATS BAR ── */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  margin-top: 2rem;
+}
+
+.stat-item {
+  background: var(--bg2);
+  padding: 1.5rem 2rem;
+  text-align: center;
+}
+
+.stat-num {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 2rem;
+  font-weight: 900;
+  color: var(--green);
+  text-shadow: var(--glow);
+  display: block;
+}
+
+.stat-label {
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: var(--text-dim);
+  margin-top: 0.3rem;
+}
+
+/* ── FOOTER ── */
+footer {
+  position: relative;
+  z-index: 1;
+  border-top: 1px solid var(--border);
+  padding: 3rem 2rem;
+  text-align: center;
+}
+
+.footer-logo {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1.2rem;
+  font-weight: 900;
+  color: var(--green);
+  text-shadow: var(--glow);
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.footer-text {
+  font-size: 12px;
+  color: var(--text-dim);
+  letter-spacing: 0.08em;
+}
+
+.footer-line {
+  margin-top: 1.5rem;
+  font-size: 10px;
+  color: #1a3a1a;
+  letter-spacing: 0.15em;
+}
+
+/* ── DIVIDER ── */
+.divider {
+  max-width: 1100px;
+  margin: 0 auto 5rem;
+  padding: 0 2rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: #0d2a0d;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+}
+
+.divider::before, .divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: #0d2a0d;
+}
+
+/* ── IMPORTANT SECTION ── */
+.importance-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.imp-block {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  padding: 2rem;
+}
+
+.imp-block.highlight {
+  border-color: var(--green);
+  box-shadow: 0 0 30px rgba(0,255,65,0.05);
+}
+
+.imp-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.8rem;
+  color: var(--green);
+  letter-spacing: 0.12em;
+  margin-bottom: 1rem;
+  padding-bottom: 0.8rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.threat-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.8rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+  color: var(--text-dim);
+}
+
+.threat-item:last-child { border-bottom: none; }
+
+.threat-icon { color: var(--red); flex-shrink: 0; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 700px) {
+  .symbol-section { grid-template-columns: 1fr; }
+  .importance-grid { grid-template-columns: 1fr; }
+  .nav-links { display: none; }
+  .term-body { padding: 1rem; font-size: 12px; }
+  .ascii-art { font-size: 0.65rem; }
+}
+
+/* ── SCROLL REVEAL ── */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: none;
+}
+</style>
+</head>
+<body>
+
+<canvas id="matrix-canvas"></canvas>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">⚡ CIPHER DAY</div>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#why">Why It Exists</a></li>
+    <li><a href="#traditions">Traditions</a></li>
+    <li><a href="#activities">Activities</a></li>
+    <li><a href="#food">Food</a></li>
+    <li><a href="#love">Why You'll Love It</a></li>
+  </ul>
+  <div class="nav-tag">EST. 2012</div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <p class="hero-prefix">[ INTERNATIONAL <span>CYBERSECURITY</span> HOLIDAY ]</p>
+  <h1 class="hero-title" data-text="CIPHER DAY">CIPHER DAY</h1>
+  <p class="hero-subtitle">// Security is everyone's responsibility.</p>
+  <div class="hero-date">NOVEMBER 2 <span class="blink">_</span></div>
+  <p class="hero-desc">
+    A global holiday celebrating digital awareness, ethical hacking culture,
+    and the collective duty to protect the internet — for everyone, everywhere.
+  </p>
+  <div class="scroll-hint">
+    <div class="scroll-arrow"></div>
+    SCROLL DOWN
+  </div>
+</section>
+
+<!-- TERMINAL INTRO -->
+<div class="terminal-block reveal">
+  <div class="term-window">
+    <div class="term-bar">
+      <div class="term-dot r"></div>
+      <div class="term-dot y"></div>
+      <div class="term-dot g"></div>
+      <div class="term-title">cipher-day — info.sh</div>
+    </div>
+    <div class="term-body">
+      <div><span class="term-prompt">root@cipher-day:~$ </span><span class="term-cmd">./info.sh --all</span></div>
+      <div class="term-out">&nbsp;</div>
+      <div class="term-out hl">► Cipher Day — International Cybersecurity Holiday</div>
+      <div class="term-out">   Observed globally on: <span style="color:var(--amber)">November 2nd</span></div>
+      <div class="term-out">   First celebrated: <span style="color:var(--amber)">2012</span></div>
+      <div class="term-out">   Initiated by: Anonymous collective + security researchers worldwide</div>
+      <div class="term-out">&nbsp;</div>
+      <div class="term-out hl">► Mission</div>
+      <div class="term-out">   To make cybersecurity accessible, understandable,</div>
+      <div class="term-out">   and celebrated by everyday people — not just experts.</div>
+      <div class="term-out">&nbsp;</div>
+      <div class="term-out amber">► Status: [ACTIVE] — Next occurrence in 218 days</div>
+      <div class="term-out">&nbsp;</div>
+      <div><span class="term-prompt">root@cipher-day:~$ </span><span class="blink">_</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<section class="section reveal" id="about">
+  <p class="section-label">01 — Core Info</p>
+  <h2 class="section-title">The Holiday at a Glance</h2>
+
+  <div class="info-grid">
+    <div class="info-card">
+      <span class="card-icon">📅</span>
+      <div class="card-label">DATE</div>
+      <div class="card-value">November 2nd</div>
+      <div class="card-body">Chosen to honor November 2, 1988 — when the Morris Worm became the first malware to propagate across the internet, forever changing the world's understanding of digital vulnerability.</div>
+    </div>
+    <div class="info-card">
+      <span class="card-icon">🌍</span>
+      <div class="card-label">WHERE</div>
+      <div class="card-value">Global</div>
+      <div class="card-body">Celebrated across 90+ countries, from university hackerspaces in São Paulo and Berlin, to corporate war-rooms in Seoul and Lagos, to public libraries in rural towns everywhere.</div>
+    </div>
+    <div class="info-card">
+      <span class="card-icon">🔒</span>
+      <div class="card-label">SYMBOL</div>
+      <div class="card-value">The Golden Padlock</div>
+      <div class="card-body">A closed padlock etched with circuit-board traces — representing both the act of protecting digital spaces and the open, interconnected nature of the internet that makes it worth protecting.</div>
+    </div>
+    <div class="info-card">
+      <span class="card-icon">🏛️</span>
+      <div class="card-label">FOUNDED</div>
+      <div class="card-value">2012</div>
+      <div class="card-body">Born from the ashes of the 2011–2012 mega-breach wave (Sony, LinkedIn, Zappos). A coalition of 200 hackers, academics, and activists drafted the "Cipher Accord" — the holiday's founding document.</div>
+    </div>
+    <div class="info-card">
+      <span class="card-icon">🎯</span>
+      <div class="card-label">AUDIENCE</div>
+      <div class="card-value">Everyone</div>
+      <div class="card-body">From 8-year-olds learning what a password is, to senior engineers deploying zero-trust architectures. Cipher Day flattens the expert barrier — the internet is for everyone, and so is its defense.</div>
+    </div>
+    <div class="info-card">
+      <span class="card-icon">🧠</span>
+      <div class="card-label">MOTTO</div>
+      <div class="card-value">"Patch the World"</div>
+      <div class="card-body">A double entendre: update your software, yes — but also update your mindset. Digital hygiene is a civic duty, as natural as locking your front door or buckling your seatbelt.</div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY IT EXISTS -->
+<section class="section reveal" id="why">
+  <p class="section-label">02 — Origin & Purpose</p>
+  <h2 class="section-title">Why Does Cipher Day Exist?</h2>
+
+  <div class="manifesto">
+    <p>
+      In 2011 and 2012, the internet experienced its first <strong>mass-casualty breach era</strong>. Over 6.5 billion user credentials were leaked across dozens of platforms. Banks were compromised. Hospitals were held hostage. Governments fell silent. And yet — most people had no idea what to do, or even that they were at risk.
+    </p>
+    <p>
+      A cybersecurity professor, three underground hackers, a journalist, and a 16-year-old CTF champion walked into an IRC chatroom and asked: <strong>"Why isn't there a holiday for this?"</strong> A holiday where the culture of security stopped being the domain of hooded figures in dark rooms — and became something <em>everyone</em> could own, celebrate, and practice.
+    </p>
+    <p>
+      Cipher Day was created to answer that question. It exists because <strong>ignorance is the most exploited vulnerability of all</strong>. Because phishing works. Because "password123" still reigns. Because the gap between those who understand digital threats and those who suffer from them grows wider every year — and that gap is a catastrophe waiting to happen.
+    </p>
+    <p>
+      The holiday is part celebration, part education, part protest — a <strong>yearly reminder that the internet is a public commons</strong>, and that every person who uses it has the right — and the responsibility — to understand how it can hurt them, and how to fight back.
+    </p>
+  </div>
+
+  <div class="stats-row reveal">
+    <div class="stat-item">
+      <span class="stat-num">8.2B</span>
+      <span class="stat-label">credentials leaked in 2023</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num">90%</span>
+      <span class="stat-label">of breaches caused by human error</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num">$4.5T</span>
+      <span class="stat-label">global cybercrime cost by 2025</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num">1 in 3</span>
+      <span class="stat-label">people never change their passwords</span>
+    </div>
+  </div>
+</section>
+
+<!-- IMPORTANCE -->
+<div class="divider reveal">// WHY IT MATTERS //</div>
+<section class="section reveal">
+  <p class="section-label">03 — Importance</p>
+  <h2 class="section-title">Why Cybersecurity Is Everyone's Fight</h2>
+
+  <div class="importance-grid">
+    <div class="imp-block highlight">
+      <div class="imp-title">⚠ THREATS THAT AFFECT REAL PEOPLE</div>
+      <div class="threat-item"><span class="threat-icon">▸</span> Ransomware attacks shutting down hospitals mid-surgery</div>
+      <div class="threat-item"><span class="threat-icon">▸</span> Identity theft wiping out life savings overnight</div>
+      <div class="threat-item"><span class="threat-icon">▸</span> Phishing emails draining bank accounts in minutes</div>
+      <div class="threat-item"><span class="threat-icon">▸</span> Nation-state hackers targeting democratic elections</div>
+      <div class="threat-item"><span class="threat-icon">▸</span> Children exposed to predatory networks through unsecured apps</div>
+      <div class="threat-item"><span class="threat-icon">▸</span> Critical infrastructure — power grids, water, transport — under siege</div>
+    </div>
+    <div class="imp-block">
+      <div class="imp-title">✓ WHAT AWARENESS ACHIEVES</div>
+      <div class="threat-item"><span style="color:var(--green)">▸</span> A single security training reduces phishing success by 70%</div>
+      <div class="threat-item"><span style="color:var(--green)">▸</span> Password managers prevent 80% of credential-based breaches</div>
+      <div class="threat-item"><span style="color:var(--green)">▸</span> Two-factor auth blocks 99.9% of account takeovers</div>
+      <div class="threat-item"><span style="color:var(--green)">▸</span> Updated software closes the majority of known attack vectors</div>
+      <div class="threat-item"><span style="color:var(--green)">▸</span> Community education creates a "herd immunity" effect online</div>
+      <div class="threat-item"><span style="color:var(--green)">▸</span> Shared threat intelligence catches attacks before they land</div>
+    </div>
+  </div>
+</section>
+
+<!-- SYMBOL -->
+<section class="section reveal">
+  <p class="section-label">04 — Symbol</p>
+  <h2 class="section-title">The Golden Padlock</h2>
+
+  <div class="symbol-section">
+    <pre class="ascii-art">
+    ╔═══════╗
+    ║ ░░░░░ ║
+  ╔═╝ ░░░░░ ╚═╗
+  ║   ░░░░░   ║
+  ║  ┌─────┐  ║
+  ║  │     │  ║
+  ║  │  🔒 │  ║
+  ║  │     │  ║
+  ║  └──┬──┘  ║
+  ║     │     ║
+  ╚═════╧═════╝
+   CIPHER  DAY
+ // PATCH THE WORLD
+    </pre>
+    <div class="symbol-text">
+      <p>
+        The <strong style="color:var(--green)">Golden Padlock</strong> was designed by anonymous artist <em>null_ptr</em> in 2012, the founding year of the holiday. Its surface is engraved with PCB circuit traces — representing that security is not a wall, but a living system of connections.
+      </p>
+      <p>
+        The padlock is <em>closed</em> — but its shackle is made of light, not metal. This symbolizes that true digital security is not about locking people out, but about empowering those inside. Knowledge is the only real key.
+      </p>
+      <p>
+        On Cipher Day, the symbol appears everywhere: as neon signs in hackerspaces, glowing on laptop stickers, spray-painted in gold on public walls, and projected onto government buildings by activist groups demanding stronger data protection laws.
+      </p>
+      <p>
+        In some countries, <strong style="color:var(--amber)">small padlocks are physically hung</strong> on bridges and public structures — like love locks — each one engraved with a cybersecurity tip, an IP address, or a hash. A physical internet of reminders.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- TRADITIONS -->
+<section class="section reveal" id="traditions">
+  <p class="section-label">05 — Traditions</p>
+  <h2 class="section-title">How the World Celebrates</h2>
+
+  <div class="traditions-list">
+    <div class="tradition-item">
+      <div class="tradition-num">01</div>
+      <div class="tradition-name">WHITE HAT HOUR</div>
+      <div class="tradition-desc">At noon (each timezone), cybersecurity professionals and hackers offer free one-hour vulnerability assessments to small businesses and nonprofits. A global wave of ethical hacking — eastward from Auckland to Vancouver.</div>
+    </div>
+    <div class="tradition-item">
+      <div class="tradition-num">02</div>
+      <div class="tradition-name">THE GREAT PATCH</div>
+      <div class="tradition-desc">An international call to action: at 8PM local time, everyone updates their operating system, apps, and firmware simultaneously. ISPs report the world's largest coordinated surge of software updates.</div>
+    </div>
+    <div class="tradition-item">
+      <div class="tradition-num">03</div>
+      <div class="tradition-name">LANTERN CEREMONY</div>
+      <div class="tradition-desc">In hackerspaces and town squares worldwide, golden paper lanterns — each printed with a security tip — are lit and released into the night. A firewall made of fire. Communities gather, strangers share Wi-Fi passwords (and regret it).</div>
+    </div>
+    <div class="tradition-item">
+      <div class="tradition-num">04</div>
+      <div class="tradition-name">CIPHER PARADE</div>
+      <div class="tradition-desc">Tech-culture street parades in major cities: participants wear costumes of famous exploits (SQL injection, MITM attacks), iconic malware, and legendary hackers. Satirical, subversive, and completely on-brand.</div>
+    </div>
+    <div class="tradition-item">
+      <div class="tradition-num">05</div>
+      <div class="tradition-name">SCHOOL DECODE</div>
+      <div class="tradition-desc">Every school participates in a standardized curriculum day: students learn about phishing, passwords, encryption, and data privacy. Teachers receive free training kits. The youngest generation becomes the first line of defense.</div>
+    </div>
+    <div class="tradition-item">
+      <div class="tradition-num">06</div>
+      <div class="tradition-name">DIGITAL AMNESTY</div>
+      <div class="tradition-desc">Organizations publicly disclose their security incidents from the past year — responsibly and anonymously — to help the community learn from failures without shame. Vulnerability is strength when shared.</div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOD -->
+<section class="section reveal" id="food">
+  <p class="section-label">06 — Food & Drinks</p>
+  <h2 class="section-title">Cipher Day Cuisine</h2>
+
+  <p style="color:var(--text-dim); font-size:13px; max-width:600px; margin-bottom:0.5rem">
+    Every great holiday needs great food. Cipher Day developed its own culinary traditions — a fusion of hacker culture comfort food and the global communities that celebrate it.
+  </p>
+
+  <div class="food-grid">
+    <div class="food-card">
+      <span class="food-emoji">🍩</span>
+      <span class="food-name">Zero-Day Donut</span>
+      <div class="food-desc">A black sesame donut with electric-green matcha glaze and a void in the center — symbolizing the unknown vulnerability lurking in every system.</div>
+    </div>
+    <div class="food-card">
+      <span class="food-emoji">☕</span>
+      <span class="food-name">Root Access Coffee</span>
+      <div class="food-desc">A triple espresso with charcoal-ash foam. Served only at 3AM, when all the best hacking happens and the best discoveries are made.</div>
+    </div>
+    <div class="food-card">
+      <span class="food-emoji">🧀</span>
+      <span class="food-name">Firewall Fondue</span>
+      <div class="food-desc">A communal cheese fondue — sharing the pot requires authenticating with a trivia question. No answer, no fork. Eat around each other's defenses.</div>
+    </div>
+    <div class="food-card">
+      <span class="food-emoji">🥚</span>
+      <span class="food-name">Encrypted Eggs</span>
+      <div class="food-desc">Deviled eggs with invisible-ink messages inside — written in lemon juice, revealed only when held over a candle flame. Old-school steganography, edible edition.</div>
+    </div>
+    <div class="food-card">
+      <span class="food-emoji">🍫</span>
+      <span class="food-name">Hash Fudge</span>
+      <div class="food-desc">Salted dark chocolate fudge sold in blocks. Each piece has an SHA-256 hash stamped on top — you eat the data. The experience is irrecoverable.</div>
+    </div>
+    <div class="food-card">
+      <span class="food-emoji">🥤</span>
+      <span class="food-name">OSINT Smoothie</span>
+      <div class="food-desc">A mystery smoothie — ingredients not disclosed. You drink it and then try to guess what's inside. A flavor-based open-source intelligence exercise.</div>
+    </div>
+    <div class="food-card">
+      <span class="food-emoji">🌮</span>
+      <span class="food-name">Phishing Tacos</span>
+      <div class="food-desc">One taco in every batch is "bait" — filled with something unexpectedly spicy. Don't click every link. Don't eat every taco. Same lesson.</div>
+    </div>
+    <div class="food-card">
+      <span class="food-emoji">🍵</span>
+      <span class="food-name">Honeypot Tea</span>
+      <div class="food-desc">A wildly sweet, lure-scented tea blend — designed to attract and trap insects in the real world, served as a reminder that the best traps are the ones you want to fall into.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ACTIVITIES -->
+<section class="section reveal" id="activities">
+  <p class="section-label">07 — Activities</p>
+  <h2 class="section-title">What People Do on Cipher Day</h2>
+
+  <div class="activity-row">
+    <div class="activity-item">
+      <div class="activity-badge badge-ctf">CTF</div>
+      <div class="activity-content">
+        <div class="activity-name">Cipher Day CTF — Global Capture the Flag</div>
+        <div class="activity-desc">The largest annual CTF competition in the world, open to all skill levels. Categories: crypto, web exploitation, forensics, reverse engineering, OSINT. Over 200,000 participants across 140 countries.</div>
+      </div>
+    </div>
+    <div class="activity-item">
+      <div class="activity-badge badge-irl">IRL</div>
+      <div class="activity-content">
+        <div class="activity-name">Lock-Picking Workshops</div>
+        <div class="activity-desc">Physical security is digital security. Community workshops teach real lock-picking using TOOOL-approved gear, drawing the line between education and crime — and showing how both worlds share the same logic.</div>
+      </div>
+    </div>
+    <div class="activity-item">
+      <div class="activity-badge badge-edu">EDU</div>
+      <div class="activity-content">
+        <div class="activity-name">Password Funeral</div>
+        <div class="activity-desc">A theatrical, ceremonial event where participants write their old weak passwords on slips of paper and burn them. A symbolic rite of passage — and a surprisingly emotional experience for most attendees.</div>
+      </div>
+    </div>
+    <div class="activity-item">
+      <div class="activity-badge badge-ctf">CTF</div>
+      <div class="activity-content">
+        <div class="activity-name">Red vs Blue — Neighborhood Edition</div>
+        <div class="activity-desc">Local hackerspaces run simplified red team / blue team simulations using Raspberry Pi networks. Neighbors compete. The winner gets bragging rights and a lifetime of free coffee in the space.</div>
+      </div>
+    </div>
+    <div class="activity-item">
+      <div class="activity-badge badge-edu">EDU</div>
+      <div class="activity-content">
+        <div class="activity-name">The Great Privacy Audit</div>
+        <div class="activity-desc">A guided session — online and in-person — where people review app permissions, privacy settings, data brokers, and social media exposure. Hosted by volunteers. Free tools provided. No judgment.</div>
+      </div>
+    </div>
+    <div class="activity-item">
+      <div class="activity-badge badge-irl">IRL</div>
+      <div class="activity-content">
+        <div class="activity-name">Darknet Film Night</div>
+        <div class="activity-desc">Open screenings of cybersecurity documentaries, films, and cult hacker classics — followed by Q&As with real security researchers who fact-check what Hollywood got wrong (answer: most of it).</div>
+      </div>
+    </div>
+    <div class="activity-item">
+      <div class="activity-badge badge-edu">EDU</div>
+      <div class="activity-content">
+        <div class="activity-name">Bug Bounty Sprint</div>
+        <div class="activity-desc">Major tech companies open special 24-hour bug bounty windows with doubled rewards on Cipher Day. Responsible disclosure at holiday speed — find it, report it, get paid, protect the world.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY PEOPLE LOVE IT -->
+<section class="section reveal" id="love">
+  <p class="section-label">08 — Why You'll Love It</p>
+  <h2 class="section-title">Why People Will Love Cipher Day</h2>
+
+  <div class="love-grid">
+    <div class="love-card" data-num="01">
+      <div class="love-title">IT BELONGS TO EVERYONE</div>
+      <div class="love-body">No ticket required. No government endorsement needed. No corporate sponsor gatekeeping. Cipher Day is radically open — you celebrate it by simply participating, learning, or teaching something to someone else.</div>
+    </div>
+    <div class="love-card" data-num="02">
+      <div class="love-title">IT'S COOL TO BE SAFE</div>
+      <div class="love-body">Cipher Day rebrands security from nerdy compliance checkbox to genuine subculture. The aesthetic is indie, the people are brilliant, the food is weird, and the music is always too loud. Being secure is the new punk.</div>
+    </div>
+    <div class="love-card" data-num="03">
+      <div class="love-title">IT ACTUALLY CHANGES THINGS</div>
+      <div class="love-body">Studies show a measurable drop in successful phishing attacks in the 30 days following Cipher Day. Awareness campaigns triggered by the holiday have passed legislation in 17 countries. A holiday that works.</div>
+    </div>
+    <div class="love-card" data-num="04">
+      <div class="love-title">COMMUNITY LIKE NO OTHER</div>
+      <div class="love-body">From greybeard sysadmins to fresh-faced script kiddies to grandmothers learning not to click email links, Cipher Day draws the most unlikely — and wonderful — community you'll ever be part of.</div>
+    </div>
+    <div class="love-card" data-num="05">
+      <div class="love-title">THE FOOD, OBVIOUSLY</div>
+      <div class="love-body">Zero-Day Donuts. Phishing Tacos. Hash Fudge. You're not finding these at Christmas or Thanksgiving. Cipher Day cuisine is born from hacker culture's love of dark humor and carbohydrates under pressure.</div>
+    </div>
+    <div class="love-card" data-num="06">
+      <div class="love-title">A HOLIDAY WITH STAKES</div>
+      <div class="love-body">Most holidays celebrate history. Cipher Day confronts the present. Every time you participate, you make the digital world fractionally safer for someone you'll never meet. That's worth celebrating.</div>
+    </div>
+  </div>
+</section>
+
+<!-- OTHER INFO -->
+<section class="section reveal">
+  <p class="section-label">09 — Other Information</p>
+  <h2 class="section-title">More About Cipher Day</h2>
+
+  <div class="terminal-block" style="padding:0; margin-bottom:0">
+    <div class="term-window">
+      <div class="term-bar">
+        <div class="term-dot r"></div>
+        <div class="term-dot y"></div>
+        <div class="term-dot g"></div>
+        <div class="term-title">cipher-day — additional_info.txt</div>
+      </div>
+      <div class="term-body">
+        <div class="term-out hl">► COLORS</div>
+        <div class="term-out">   Terminal green (#00FF41) — the original phosphor glow of hackers.</div>
+        <div class="term-out">   Electric amber (#FFB300) — alert, awareness, action.</div>
+        <div class="term-out">   Midnight black (#030A03) — the screen that holds all light.</div>
+        <div class="term-out">&nbsp;</div>
+
+        <div class="term-out hl">► ANTHEM</div>
+        <div class="term-out">   "Packet Loss" by synthetic artist NULL_PTR (2014) —</div>
+        <div class="term-out">   a lo-fi chiptune track played in every hackerspace on Cipher Day morning.</div>
+        <div class="term-out">   The melody is encoded in its own lyrics as Base64.</div>
+        <div class="term-out">&nbsp;</div>
+
+        <div class="term-out hl">► TRADITIONAL GREETING</div>
+        <div class="term-out amber">   "Stay patched."  ↔  "And you."</div>
+        <div class="term-out">&nbsp;</div>
+
+        <div class="term-out hl">► THE CIPHER ACCORD (2012)</div>
+        <div class="term-out">   The founding document, signed by 200 researchers & hackers.</div>
+        <div class="term-out">   Clause 1: "Knowledge is the only true firewall."</div>
+        <div class="term-out">   Clause 2: "Security is not a product. It is a process."</div>
+        <div class="term-out">   Clause 3: "The internet is a commons. Protect it as one."</div>
+        <div class="term-out">&nbsp;</div>
+
+        <div class="term-out hl">► HOW TO START YOUR OWN CIPHER DAY EVENT</div>
+        <div class="term-out">   1. Download the free Organizer Kit from cipher-day.org/kit</div>
+        <div class="term-out">   2. Register your event (free) in the global directory</div>
+        <div class="term-out">   3. Pick any activity from the official list — or invent your own</div>
+        <div class="term-out">   4. Teach one person something. That's the whole job.</div>
+        <div class="term-out">&nbsp;</div>
+
+        <div><span class="term-prompt">root@cipher-day:~$ </span><span class="blink">_</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <span class="footer-logo">⚡ CIPHER DAY</span>
+  <p class="footer-text">International Cybersecurity Holiday — Celebrated November 2nd</p>
+  <p class="footer-text" style="margin-top:0.5rem; color:#2a5a2a">
+    "Knowledge is the only true firewall." — The Cipher Accord, 2012
+  </p>
+  <p class="footer-line">
+    THIS IS A FICTIONAL EDUCATIONAL HOLIDAY · ALL STATISTICS ARE ILLUSTRATIVE · CREATED FOR EDUCATIONAL PURPOSES
+  </p>
+</footer>
+
+<!-- SCRIPTS -->
+<script>
+// Matrix rain
+const canvas = document.getElementById('matrix-canvas');
+const ctx = canvas.getContext('2d');
+
+function resizeCanvas() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+const chars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノ!@#$%^&*{}[]<>/\\|';
+const fontSize = 13;
+let columns, drops;
+
+function initMatrix() {
+  columns = Math.floor(canvas.width / fontSize);
+  drops = Array(columns).fill(1);
+}
+initMatrix();
+window.addEventListener('resize', initMatrix);
+
+function drawMatrix() {
+  ctx.fillStyle = 'rgba(3,10,3,0.05)';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = '#00ff41';
+  ctx.font = `${fontSize}px Share Tech Mono`;
+
+  for (let i = 0; i < drops.length; i++) {
+    const char = chars[Math.floor(Math.random() * chars.length)];
+    ctx.fillText(char, i * fontSize, drops[i] * fontSize);
+    if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+      drops[i] = 0;
+    }
+    drops[i]++;
+  }
+}
+
+setInterval(drawMatrix, 50);
+
+// Scroll reveal
+const reveals = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+reveals.forEach(r => observer.observe(r));
+</script>
+</body>
+</html>
